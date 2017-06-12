@@ -21,22 +21,22 @@ rm -rf alignment_1stPass
 
 # Delete redundant alignments.
 # By default only mdup.hardclip.bam is kept.
-for sample in `ls -d alignment/*/`
+for sample in `ls -d alignment/*/ 2>/dev/null`
 do
     # List all readsets and remove them.
-    for readset in `ls -d alignment/$sample/*/`
+    for readset in `ls -d $sample/*/ 2>/dev/null`
     do
         rm -rf $readset
     done
     
     # Remove everything but the filtered reads
-    rm alignment/$sample/*QueryNameSorted.bam
-    rm alignment/$sample/*.sorted.bam
-    rm alignment/$sample/*.sorted.mdup.bam
+    rm -f $sample/*QueryNameSorted.bam
+    rm -f $sample/*.sorted.bam
+    rm -f $sample/*.sorted.mdup.bam
     
     if [ $DIRECTIONAL == "REMOVE" ]
     then 
-        rm alignment/$sample/*.forward.bam
-        rm alignment/$sample/*.reverse.bam
+        rm -f $sample/*.forward.bam
+        rm -f $sample/*.reverse.bam
     fi
 done
