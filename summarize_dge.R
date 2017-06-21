@@ -43,7 +43,7 @@ summarize.files <- function(file.names, header.columns, data.columns, file.label
     return(results)
 }
 
-summarize.dge <- function(input.dir, dge.library="both") {
+summarize.dge <- function(input.dir, dge.library="both", subdir="DGE") {
     if(dge.library=="DESeq") {
         data.columns=3:6
     } else if(dge.library=="edgeR") {
@@ -52,7 +52,7 @@ summarize.dge <- function(input.dir, dge.library="both") {
         data.columns=3:8
     }
     
-    dge.dir = file.path(input.dir, "DGE")
+    dge.dir = file.path(input.dir, subdir)
     dge.files = file.path(list.files(dge.dir), "dge_results.csv")
     dge.files = dge.files[file.exists(file.path(dge.dir, dge.files))]
     
@@ -63,4 +63,35 @@ summarize.dge <- function(input.dir, dge.library="both") {
                               file.labels=dge.names, 
                               id.col="id", 
                               sep="\t", header=TRUE)
+    
+    return(results)
+}
+
+dge.by.comparison <- function(dge.summary, fc.threshold, p.threshold) {
+    which.adj = grepl(".adj.p.value", colnames(dge.summary))
+    
+    results = list()
+    for(i in which(which.adj)) {
+        comp.name = gsub(".*.adj.p.value.(.*)", "\\1", colnames(dge.summary)[i])
+        p.pass = dge.summary[,i] < p.threshold
+        fc.pass = abs(dge.summary[,i - 3]) > fc.threshold
+        up = dge.summary[,i - 3] > 0
+        down = dge.summary[,i - 3] < 0
+        
+        col.select = c(2, i-2, i-3, i)
+        up.select = p.pass & fc.pass & up
+        gene.up = dge.summary[up.select & !is.na(up.select),col.select]
+        colnames(gene.up) = gsub(paste0("(.*)\\.", comp.name), "\\1", colnames(gene.up))
+        #gene.up = gene.up[!is.na(gene.up)]
+        
+        down.select = p.pass & fc.pass & down
+        gene.down = dge.summary[down.select & !is.na(down.select),col.select]
+        colnames(gene.down) = gsub(paste0("(.*)\\.", comp.name), "\\1", colnames(gene.down))
+        #gene.down = gene.down[!is.na(gene.down)]
+        
+        results[[comp.name]] = list(Up=gene.up,
+                                    Down=gene.down)
+    }
+
+    return(results)
 }
