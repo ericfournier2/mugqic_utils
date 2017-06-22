@@ -29,20 +29,21 @@ case $key in
     RAP=$2
     shift
     ;;
-    -o|--overwrite)
+    -w|--overwrite)
     OVERWRITE=TRUE
     ;;
 esac
 shift # past argument or value
 done
 
+jobids=""
 for i in $MUGQIC_DIR/alignment/*/*$INPUTSUFFIX
 do
     samplename=`basename $i $INPUTSUFFIX`
-    if [ ! -e $MUGQIC_DIR/tracks/$samplename.bw -o "$OVERWRITE" = "TRUE" ]
+    if [ ! -e "$MUGQIC_DIR/tracks/$samplename.bw" -o "$OVERWRITE" = "TRUE" ]
     then     
         mkdir -p $MUGQIC_DIR/jobs
-        script=$MUGQIC_DIR/jobs/$samplename.make_bigwig.sh
+        script="$MUGQIC_DIR/jobs/$samplename.make_bigwig.sh"
         
         cat <<EOF > $script
 #!/bin/bash
@@ -56,6 +57,8 @@ bamCoverage -e 200 --binSize 5 -p 16 --normalizeUsingRPKM \
     -o $MUGQIC_DIR/tracks/$samplename$OUTPUTSUFFIX.bw
 EOF
         workdir=`pwd`
-        qsub $script -o $script.stdout -e $script.stderr -d $workdir
+        jobids=$jobids:`qsub $script -o $script.stdout -e $script.stderr -d $workdir`
     fi
 done
+
+echo $jobids

@@ -98,10 +98,10 @@ descriptionUrl
             track_dict['type'] = 'bigWig'
             track_dict['visibility'] = 'full'
          elif fileext == ".bb":
-            track_dict['type'] = 'bigWig'
+            track_dict['type'] = 'bigBed'
             track_dict['visibility'] = 'dense'
          elif fileext == ".bam":
-            track_dict['type'] = 'bigWig'
+            track_dict['type'] = 'bam'
             track_dict['visibility'] = 'dense'
          else:
             # Unrecognized file type. Skip it.

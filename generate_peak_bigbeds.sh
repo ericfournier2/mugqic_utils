@@ -9,6 +9,7 @@ module load mugqic/ucsc/v346
 fetchChromSizes $genome > $genome.chrom.sizes
 
 # Loop over all peak files.
+jobids=""
 for i in $mugqicdir/peak_call/*/*.*Peak
 do
     # Determine the sample name.
@@ -36,5 +37,7 @@ do
 bash scripts/generate_bigbed.sh $i $mugqicdir/tracks/PeakBigbed/$samplename.bb $genome.chrom.sizes
 EOF
     workdir=`pwd`
-    qsub $script -o $script.stdout -e $script.stderr -d $workdir
+    jobids=$jobids:`qsub $script -o $script.stdout -e $script.stderr -d $workdir`
 done
+
+echo $jobids
