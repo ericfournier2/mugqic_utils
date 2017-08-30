@@ -1,5 +1,6 @@
 # Set argument default values.
 DIRECTIONAL=REMOVE
+BEDGRAPH=REMOVE
 
 # Read command line arguments
 while [[ $# -gt 1 ]]
@@ -9,6 +10,9 @@ key="$1"
 case $key in
     -d|--keepdirectional)
     DIRECTIONAL=KEEP
+    ;;
+    -b|--keepbedgraph)
+    BEDGRAPH=KEEP
     ;;
 esac
 shift # past argument or value
@@ -40,3 +44,14 @@ do
         rm -f $sample/*.reverse.bam
     fi
 done
+
+# Remove rRNA alignments from the metrics folder.
+rm metrics/*/*/*.bam
+
+# Remove bedgraph tracks.
+if [ $BEDGRAPH == "REMOVE" ]
+then 
+    rm tracks/*/*.bedGraph*
+    rm tracks.zip
+    rm report/tracks.zip
+fi

@@ -29,6 +29,9 @@ do
     do
         rm -rf $readset
     done
+    
+    # Remove merged bam files.
+    rm -f $sample/*.merged.bam
 done
 
 if [ "$BEDGRAPH" = "REMOVE" ]
