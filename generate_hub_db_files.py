@@ -97,7 +97,7 @@ descriptionUrl
          if (fileext == ".bw") or (fileext == ".bigwig"):
             track_dict['type'] = 'bigWig'
             track_dict['visibility'] = 'full'
-         elif fileext == ".bb":
+         elif fileext == ".bb" or (fileext == ".bigbed"):
             track_dict['type'] = 'bigBed'
             track_dict['visibility'] = 'dense'
          elif fileext == ".bam":
