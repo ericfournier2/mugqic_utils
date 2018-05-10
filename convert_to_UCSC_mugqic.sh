@@ -32,6 +32,9 @@ case $key in
     -o|--overwrite)
     OVERWRITE=TRUE
     ;;
+    -l|--slurm)
+    SLURM=TRUE
+    ;;    
 esac
 shift # past argument or value
 done
@@ -54,6 +57,11 @@ do
 convert_to_UCSC.sh $i $i$OUTPUTSUFFIX
 EOF
         workdir=`pwd`
-        qsub $script -o $script.stdout -e $script.stderr -d $workdir
+        if [ $SLURM = TRUE ]
+        then
+            sbatch --time=6:00:00 --account=$RAP -J $script -N 1 --mincpus 16 -o $script.stdout -e $script.stderr -D $workdir
+        else
+            qsub $script -o $script.stdout -e $script.stderr -d $workdir
+        fi
     fi
 done
